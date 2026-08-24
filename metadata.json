@@ -1,0 +1,6 @@
+{
+  "name": "Radio Tuner",
+  "description": "A precision-crafted skeuomorphic radio player connecting to live audio streams with rotary frequency tuning.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
