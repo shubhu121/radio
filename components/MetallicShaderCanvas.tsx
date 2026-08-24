@@ -28,16 +28,16 @@ uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
 uniform float u_isDragging;
-uniform vec2 u_dialCenter; // normalized dial center
+uniform vec2 u_dialCenter; // normalized dial center (490/720, 245/490)
 
-// Hash function for procedural noise
+// Fast hash
 float hash(vec2 p) {
   p = fract(p * vec2(123.34, 456.21));
   p += dot(p, p + 45.32);
   return fract(p.x * p.y);
 }
 
-// 1D Perlin-like noise
+// 2D Value Noise
 float noise(vec2 p) {
   vec2 i = floor(p);
   vec2 f = fract(p);
@@ -49,110 +49,139 @@ float noise(vec2 p) {
   return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
 }
 
-// Procedural brushed anisotropic grain
-float brushedGrain(vec2 uv, vec2 center) {
-  vec2 d = uv - center;
-  float angle = atan(d.y, d.x);
-  float dist = length(d);
-  
-  // Radial brushed streaks centered around dial
-  float radialStreak = sin(angle * 160.0 + noise(vec2(angle * 30.0, dist * 5.0)) * 4.0) * 0.5 + 0.5;
-  
-  // Horizontal micro-brushing across the titanium plate
-  float horizontalGrain = fract(sin(dot(uv * vec2(12.0, 850.0), vec2(12.9898, 78.233))) * 43758.5453);
-  
-  return mix(radialStreak * 0.6 + 0.4, horizontalGrain, 0.35);
+// High-fidelity brushed titanium/aluminum micro-grooves
+float shinyMetalGrain(vec2 uv) {
+  float h1 = fract(sin(uv.y * 1400.0) * 43758.5453);
+  float h2 = fract(sin(uv.y * 700.0 + 1.2) * 23421.6312);
+  float h3 = fract(sin(uv.y * 350.0 + 4.5) * 17492.1245);
+  float n = noise(uv * vec2(16.0, 600.0));
+  return h1 * 0.40 + h2 * 0.30 + h3 * 0.15 + n * 0.15;
+}
+
+// Sandblasted micro-roughness for dark matte center
+float matteSandblastGrain(vec2 uv) {
+  float speckle = fract(sin(dot(uv * 520.0, vec2(12.9898, 78.233))) * 43758.5453);
+  float n = noise(uv * 180.0);
+  return speckle * 0.65 + n * 0.35;
 }
 
 void main() {
   vec2 uv = v_uv;
   vec2 aspect = vec2(u_resolution.x / u_resolution.y, 1.0);
   
-  // Mouse position normalized
+  // Interactive light position with natural resting sweep
   vec2 mouse = u_mouse;
   if (mouse.x <= 0.0 && mouse.y <= 0.0) {
-    // Ambient floating light if no interaction
     mouse = vec2(
-      0.5 + sin(u_time * 0.7) * 0.35,
-      0.45 + cos(u_time * 0.5) * 0.25
+      0.30 + sin(u_time * 0.45) * 0.28,
+      0.22 + cos(u_time * 0.35) * 0.18
     );
   }
   
-  // Base dark gunmetal / titanium metallic palette
-  vec3 metalBase = vec3(0.08, 0.075, 0.10);     // Deep obsidian titanium
-  vec3 metalMid  = vec3(0.16, 0.15, 0.20);     // Anodized slate steel
-  vec3 metalHigh = vec3(0.38, 0.35, 0.46);     // Brushed silver-violet sheen
-  vec3 metalHot  = vec3(0.85, 0.82, 0.95);     // Sharp chrome specular reflection
+  vec2 center = u_dialCenter;
+  vec2 toDial = (uv - center) * aspect;
+  float distToDial = length(toDial);
   
-  // Micro-texture grain
-  float grain = brushedGrain(uv, u_dialCenter);
+  // Dial radius in normalized height coordinates (~268px on 490px height => 268.0 / 490.0 = ~0.5469)
+  float dialRadius = 268.0 / 490.0;
   
-  // Primary light vector from mouse cursor
+  // 0.0 = Outer Shiny Metal Chassis, 1.0 = Inner Matte Black Dial Component
+  float isInnerDial = smoothstep(dialRadius + 0.005, dialRadius - 0.005, distToDial);
+  
+  // Light calculations
   vec2 lightDir = (mouse - uv) * aspect;
   float lightDist = length(lightDir);
-  vec3 L = normalize(vec3(lightDir, 0.42));
+  vec3 L = normalize(vec3(lightDir, 0.60));
+  vec3 V = vec3(0.0, 0.0, 1.0);
+  vec3 H = normalize(L + V);
   
-  // Secondary ambient studio rim light (top-left)
-  vec3 L2 = normalize(vec3((vec2(0.1, 0.05) - uv) * aspect, 0.6));
+  // -------------------------------------------------------------
+  // 1. SHINY ENGRAVED METALLIC SHADER (Outer Chassis & Beveled Frame)
+  // -------------------------------------------------------------
+  float outerGrain = shinyMetalGrain(uv);
   
-  // Surface normal with subtle brushed micro-grooves
-  float bump = (grain - 0.5) * 0.06;
-  vec3 N = normalize(vec3(bump * 1.5, bump, 1.0));
+  // Highly reflective silver-lavender titanium palette
+  vec3 metalDeep = vec3(0.42, 0.39, 0.52);
+  vec3 metalMid = vec3(0.74, 0.71, 0.84);
+  vec3 metalBright = vec3(0.95, 0.93, 0.99);
+  vec3 pureWhite = vec3(1.0, 1.0, 1.0);
   
-  // Anisotropic tangent vector (rotary around dial center)
-  vec2 tangent2D = normalize(vec2(-(uv.y - u_dialCenter.y), uv.x - u_dialCenter.x));
-  vec3 T = normalize(vec3(tangent2D, 0.0));
+  // Primary horizontal anisotropic brush reflection cone (Kajiya-Kay model)
+  vec2 tangent = vec2(1.0, 0.0);
+  float TdotH = dot(vec3(tangent, 0.0), H);
+  float sinTH = sqrt(max(0.0, 1.0 - TdotH * TdotH));
+  float anisoBand1 = pow(sinTH, 18.0);
+  float anisoBand2 = pow(sinTH, 4.0) * 0.4;
   
-  // Anisotropic Ward/Kajiya-Kay specular approximation for brushed metal
-  float dotLT = dot(L, T);
-  float dotVR = dot(vec3(0.0, 0.0, 1.0), T); // View is straight on
-  float sinLT = sqrt(max(0.0, 1.0 - dotLT * dotLT));
-  float sinVT = sqrt(max(0.0, 1.0 - dotVR * dotVR));
-  float anisoSpec = max(0.0, dotLT * dotVR + sinLT * sinVT);
-  anisoSpec = pow(anisoSpec, 32.0) * (0.8 + 0.4 * grain);
+  // Radial lathe brush highlight radiating across the corner contours
+  vec2 radTangent = normalize(vec2(-toDial.y, toDial.x));
+  float RadTdotH = dot(vec3(radTangent, 0.0), H);
+  float radialAniso = pow(sqrt(max(0.0, 1.0 - RadTdotH * RadTdotH)), 12.0) * 0.35;
   
-  // Secondary standard Blinn-Phong specular highlight
-  vec3 H = normalize(L + vec3(0.0, 0.0, 1.0));
-  float NdotH = max(0.0, dot(N, H));
-  float sharpSpec = pow(NdotH, 64.0) * 1.8;
+  // Direct specular hotspot
+  float directSpec = pow(max(0.0, dot(vec3(0.0, 0.0, 1.0), H)), 32.0);
   
-  // Diffuse falloff from moving light
-  float diff = max(0.0, dot(N, L)) * exp(-lightDist * 1.8);
-  float diff2 = max(0.0, dot(N, L2)) * 0.4;
+  // Diffuse light gradient
+  float diffuse = max(0.0, dot(vec3(0.0, 0.0, 1.0), L)) * 0.5 + 0.5;
   
-  // Radial reflection cone (signature of metallic rotary knobs & dials)
-  float angleToCenter = atan(uv.y - u_dialCenter.y, uv.x - u_dialCenter.x);
-  float coneReflection = pow(abs(cos(angleToCenter * 2.0 + u_time * 0.08)), 16.0) * 0.45;
-  coneReflection += pow(abs(cos(angleToCenter * 4.0 - 0.5)), 32.0) * 0.3;
+  // Sweeping diagonal metallic light sheen
+  float diagSheen = pow(max(0.0, 1.0 - abs((uv.x + uv.y * 0.7) - (mouse.x + mouse.y * 0.7))), 6.0) * 0.55;
   
-  // Chamfer / Edge bevel highlights (beveled machined metal plate rim)
+  vec3 shinyColor = mix(metalDeep, metalMid, diffuse);
+  shinyColor += metalBright * ((anisoBand1 + anisoBand2 + radialAniso) * 0.65 * exp(-lightDist * 0.6));
+  shinyColor += pureWhite * (directSpec * 0.50 * exp(-lightDist * 0.4) + diagSheen * 0.40);
+  shinyColor += (outerGrain - 0.5) * 0.09;
+  
+  // Machined Outer Perimeter Chamfer (Catching brilliant top-left highlight)
   float edgeDistX = min(uv.x, 1.0 - uv.x) * aspect.x;
   float edgeDistY = min(uv.y, 1.0 - uv.y);
   float edgeDist = min(edgeDistX, edgeDistY);
-  float bevelLight = smoothstep(0.02, 0.001, edgeDist);
-  float topHighlight = smoothstep(0.015, 0.001, uv.y) * max(0.0, dot(L2, vec3(0.0, -1.0, 0.5))) * 1.2;
+  float edgeBevel = smoothstep(0.024, 0.002, edgeDist);
+  float topHighlight = smoothstep(0.020, 0.001, uv.y) * 0.75;
+  float leftHighlight = smoothstep(0.020, 0.001, uv.x) * 0.55;
+  shinyColor += pureWhite * (edgeBevel * 0.65 + topHighlight + leftHighlight);
   
-  // Dragging interaction boost (plate becomes more reactive and luminescent when tuned)
-  float dragBoost = u_isDragging * 0.25;
+  // -------------------------------------------------------------
+  // 2. MATTE BLACK SHADER (Inner Circular Dial)
+  // -------------------------------------------------------------
+  float matteGrain = matteSandblastGrain(uv);
   
-  // Compose metallic layers
-  vec3 color = metalBase;
-  color += metalMid * (diff + diff2 + coneReflection);
-  color += metalHigh * (anisoSpec * 1.2 + grain * 0.08 + dragBoost);
-  color += metalHot * (sharpSpec * 1.4 * exp(-lightDist * 2.2));
+  // Deep velvety anodized black-graphite tones
+  vec3 matteDeepBlack = vec3(0.035, 0.022, 0.060);
+  vec3 matteMidGraphite = vec3(0.075, 0.052, 0.115);
+  vec3 matteSoftSheen = vec3(0.140, 0.105, 0.195);
   
-  // Add chamfer bevel edge glint
-  color += metalHigh * bevelLight * 0.8;
-  color += vec3(0.9, 0.88, 1.0) * topHighlight;
+  // Soft diffuse micro-scattering (zero glare)
+  float matteDiff = max(0.0, dot(vec3(0.0, 0.0, 1.0), L)) * 0.35 + 0.65;
+  float matteSheenFactor = pow(max(0.0, dot(vec3(0.0, 0.0, 1.0), H)), 4.0) * 0.10 * exp(-lightDist * 1.5);
   
-  // Subtle radial vignette towards corners
-  float cornerDist = length((uv - vec2(0.5)) * aspect);
-  color *= (1.05 - cornerDist * 0.35);
+  vec3 matteColor = mix(matteDeepBlack, matteMidGraphite, matteDiff);
+  matteColor += matteSoftSheen * (matteSheenFactor + u_isDragging * 0.04);
+  matteColor += (matteGrain - 0.5) * 0.035;
   
-  // Contrast curve for deep metallic punch
-  color = pow(color, vec3(0.95));
+  // Radial depth gradient within dial cavity
+  float normDialDist = distToDial / dialRadius;
+  matteColor *= mix(0.86, 1.04, normDialDist);
   
-  gl_FragColor = vec4(color, 1.0);
+  // -------------------------------------------------------------
+  // 3. RECESS BOUNDARY (Milled Step Groove between Shiny & Matte)
+  // -------------------------------------------------------------
+  float jointDist = abs(distToDial - dialRadius);
+  float jointShadow = smoothstep(0.006, 0.000, jointDist) * 0.5;
+  float jointHighlight = smoothstep(0.012, 0.005, distToDial - dialRadius) * smoothstep(0.018, 0.012, dialRadius + 0.018 - distToDial) * 0.45;
+  
+  // Combine the two distinct shader materials
+  vec3 finalColor = mix(shinyColor, matteColor, isInnerDial);
+  
+  // Shadow and bright milled lip
+  finalColor = mix(finalColor, vec3(0.01, 0.005, 0.02), jointShadow * isInnerDial);
+  finalColor += pureWhite * jointHighlight * (1.0 - isInnerDial);
+  
+  // Soft corner vignette
+  float vig = length((uv - vec2(0.5)) * aspect);
+  finalColor *= (1.0 - vig * 0.10);
+  
+  gl_FragColor = vec4(finalColor, 1.0);
 }
 `;
 
@@ -172,18 +201,15 @@ export default function MetallicShaderCanvas({ className, isDragging = false }: 
     });
 
     if (!gl) {
-      console.warn('WebGL not supported, fallback to CSS metal.');
       return;
     }
 
-    // Compile shaders
     const createShader = (type: number, src: string) => {
       const shader = gl.createShader(type);
       if (!shader) return null;
       gl.shaderSource(shader, src);
       gl.compileShader(shader);
       if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        console.error(gl.getShaderInfoLog(shader));
         gl.deleteShader(shader);
         return null;
       }
@@ -201,13 +227,11 @@ export default function MetallicShaderCanvas({ className, isDragging = false }: 
     gl.linkProgram(program);
 
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      console.error(gl.getProgramInfoLog(program));
       return;
     }
 
     gl.useProgram(program);
 
-    // Full screen quad
     const positions = new Float32Array([
       -1, -1,
        1, -1,
@@ -225,14 +249,13 @@ export default function MetallicShaderCanvas({ className, isDragging = false }: 
     gl.enableVertexAttribArray(aPos);
     gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
 
-    // Uniform locations
     const uResolution = gl.getUniformLocation(program, 'u_resolution');
     const uMouse = gl.getUniformLocation(program, 'u_mouse');
     const uTime = gl.getUniformLocation(program, 'u_time');
     const uIsDragging = gl.getUniformLocation(program, 'u_isDragging');
     const uDialCenter = gl.getUniformLocation(program, 'u_dialCenter');
 
-    let startTime = performance.now();
+    const startTime = performance.now();
 
     const handleMouseMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
@@ -261,7 +284,6 @@ export default function MetallicShaderCanvas({ className, isDragging = false }: 
     const render = () => {
       if (!canvas) return;
 
-      // Handle retina displays
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const displayWidth = Math.round(canvas.clientWidth * dpr);
       const displayHeight = Math.round(canvas.clientHeight * dpr);
@@ -278,7 +300,6 @@ export default function MetallicShaderCanvas({ className, isDragging = false }: 
       gl.uniform2f(uMouse, mousePosRef.current.x, mousePosRef.current.y);
       gl.uniform1f(uTime, elapsed);
       gl.uniform1f(uIsDragging, isDragging ? 1.0 : 0.0);
-      // Normalized coordinates of dial center (cx=490 / 720, cy=245 / 490 = 0.5)
       gl.uniform2f(uDialCenter, 490 / 720, 245 / 490);
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);

@@ -145,11 +145,11 @@ export default function RadioApp() {
     handleFrequencyChange(frequency + step);
   };
 
-  // Geometry configuration matching the reference image SVG
+  // Geometry configuration matching the reference layout
   const cx = 490;
   const cy = 245;
-  const rBandOuter = 345;
-  const rBandInner = 285;
+  const rBandOuter = 338;
+  const rBandInner = 292;
   const rInnerTicks = 265;
   const rOuterTicks = 385;
 
@@ -158,7 +158,7 @@ export default function RadioApp() {
   const baseFreq = band === 'FM' ? 98.8 : 880;
   const degMultiplier = band === 'FM' ? 5.2 : 0.08;
 
-  // Compute rotation angle for the entire rotary tick drum
+  // Compute rotation angle for the rotary tick drum
   const dialRotation = (frequency - baseFreq) * -degMultiplier;
 
   // Calculate angle for any frequency along the rotary circle
@@ -274,7 +274,7 @@ export default function RadioApp() {
 
       const isMajor = i % 4 === 0;
       const isMedium = i % 2 === 0;
-      const tickLength = isMajor ? 28 : isMedium ? 18 : 11;
+      const tickLength = isMajor ? 26 : isMedium ? 16 : 10;
       const r1 = rInnerTicks;
       const r2 = rInnerTicks - tickLength;
 
@@ -351,42 +351,42 @@ export default function RadioApp() {
         background: 'radial-gradient(circle at 50% 30%, #D8CAFA 0%, #BAA2EC 60%, #9C80DE 100%)',
       }}
     >
-      {/* Central Skeuomorphic Brushed Titanium Metallic Card */}
+      {/* Central Skeuomorphic Matte Anodized Dark Metal Chassis */}
       <div
         id="radio-card"
         ref={cardRef}
         onWheel={handleWheel}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
-        className={`relative w-full max-w-[720px] aspect-[720/490] rounded-[34px] text-white overflow-hidden shadow-2xl transition-transform border border-white/20 ${
+        className={`relative w-full max-w-[720px] aspect-[720/490] rounded-[34px] text-white overflow-hidden shadow-2xl transition-transform border border-white/15 ${
           isDragging ? 'cursor-grabbing scale-[0.998]' : 'cursor-grab active:scale-[0.998]'
         }`}
         style={{
           boxShadow: `
-            0 40px 90px -15px rgba(45, 20, 85, 0.55),
-            0 20px 40px -5px rgba(0, 0, 0, 0.7),
-            inset 0 1.5px 0.5px rgba(255, 255, 255, 0.45),
-            inset 0 -2px 4px rgba(0, 0, 0, 0.8),
-            0 0 0 1px rgba(18, 12, 30, 0.8)
+            0 35px 80px -15px rgba(35, 15, 70, 0.6),
+            0 18px 36px -5px rgba(0, 0, 0, 0.75),
+            inset 0 1.5px 0.5px rgba(255, 255, 255, 0.35),
+            inset 0 -2px 3px rgba(0, 0, 0, 0.8),
+            0 0 0 1px rgba(25, 18, 40, 0.9)
           `,
-          background: '#0D0915',
+          background: '#0B0714',
         }}
       >
-        {/* Custom WebGL Metallic Shader Canvas (Reflective, Shiny Anisotropic Brushed Steel) */}
+        {/* Custom WebGL Matte Finish Anodized Metal Shader Canvas */}
         <MetallicShaderCanvas isDragging={isDragging} />
 
-        {/* Ambient Top Specular Sheen & Glass Reflection Overlay */}
+        {/* Ambient Subtle Matte Top Bevel Overlay */}
         <div
           className="absolute inset-0 pointer-events-none rounded-[34px]"
           style={{
             background: `
-              linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 25%, transparent 55%, rgba(0, 0, 0, 0.3) 100%),
-              radial-gradient(ellipse at 85% 15%, rgba(220, 205, 255, 0.18) 0%, transparent 50%)
+              linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 40%, rgba(0, 0, 0, 0.25) 100%),
+              radial-gradient(ellipse at 75% 20%, rgba(200, 180, 250, 0.07) 0%, transparent 60%)
             `,
           }}
         />
 
-        {/* Precision CNC Hex Screws in 4 Corners */}
+        {/* Precision Matte Bead-Blasted Stainless Steel Corner Screws */}
         {[
           { id: 'screw-tl', className: 'top-4 left-4' },
           { id: 'screw-tr', className: 'top-4 right-4' },
@@ -398,13 +398,13 @@ export default function RadioApp() {
             id={screw.id}
             className={`absolute ${screw.className} w-3.5 h-3.5 rounded-full pointer-events-none shadow-md flex items-center justify-center`}
             style={{
-              background: 'radial-gradient(circle at 35% 35%, #D4CEE8 0%, #796F96 55%, #2B233D 100%)',
-              boxShadow: 'inset 0 1px 1px rgba(255, 255, 255, 0.6), 0 1px 2px rgba(0, 0, 0, 0.8), inset 0 -1px 1px rgba(0, 0, 0, 0.8)',
+              background: 'radial-gradient(circle at 35% 35%, #B8B0D0 0%, #685E82 60%, #201A30 100%)',
+              boxShadow: 'inset 0 1px 1px rgba(255, 255, 255, 0.45), 0 1px 2px rgba(0, 0, 0, 0.8), inset 0 -1px 1px rgba(0, 0, 0, 0.8)',
             }}
           >
             {/* Screw Slot Groove */}
             <div
-              className="w-2 h-0.5 bg-[#1B152B] rounded-full shadow-[0_1px_0_rgba(255,255,255,0.3)] transform rotate-45"
+              className="w-2 h-0.5 bg-[#140E22] rounded-full shadow-[0_0.8px_0_rgba(255,255,255,0.25)] transform rotate-45"
             />
           </div>
         ))}
@@ -415,27 +415,18 @@ export default function RadioApp() {
           className="absolute inset-0 w-full h-full pointer-events-none"
         >
           <defs>
-            {/* Metallic Anodized Purple/Violet Gradient for the Circular Band */}
+            {/* Matte Satin Violet Anodized Metal Gradient for the Circular Band */}
             <linearGradient id="anodizedBandGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#4A2099" />
-              <stop offset="25%" stopColor="#7E4CF0" />
-              <stop offset="48%" stopColor="#E2D4FD" />
-              <stop offset="52%" stopColor="#BBA0F7" />
-              <stop offset="75%" stopColor="#733EDC" />
-              <stop offset="100%" stopColor="#38137D" />
-            </linearGradient>
-
-            {/* Inset shadow for band channel recess */}
-            <linearGradient id="bandEdgeShadow" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="rgba(0,0,0,0.6)" />
-              <stop offset="6%" stopColor="transparent" />
-              <stop offset="94%" stopColor="transparent" />
-              <stop offset="100%" stopColor="rgba(255,255,255,0.3)" />
+              <stop offset="0%" stopColor="#3F1B85" />
+              <stop offset="25%" stopColor="#6C3ECE" />
+              <stop offset="50%" stopColor="#C8B4F5" />
+              <stop offset="75%" stopColor="#6133BC" />
+              <stop offset="100%" stopColor="#2E0E68" />
             </linearGradient>
 
             {/* Needle Glow Filter */}
             <filter id="purpleGlow" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="3.5" result="blur" />
+              <feGaussianBlur stdDeviation="3" result="blur" />
               <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
           </defs>
@@ -451,23 +442,23 @@ export default function RadioApp() {
           >
             {outerTicks.map((t) => (
               <g key={t.id}>
-                {/* Lower Specular Highlight (Rim Catching Light) */}
+                {/* Lower Specular Highlight (Milled Lip Catching Light) */}
                 <line
                   x1={t.hx1}
                   y1={t.hy1}
                   x2={t.hx2}
                   y2={t.hy2}
-                  stroke="rgba(255, 255, 255, 0.28)"
+                  stroke="rgba(255, 255, 255, 0.22)"
                   strokeWidth="1.2"
                   strokeLinecap="round"
                 />
-                {/* Deep Engraved Groove */}
+                {/* Deep Engraved Groove Shadow */}
                 <line
                   x1={t.x1}
                   y1={t.y1}
                   x2={t.x2}
                   y2={t.y2}
-                  stroke="#1C142B"
+                  stroke="#0A0614"
                   strokeWidth="1.6"
                   strokeLinecap="round"
                 />
@@ -475,53 +466,42 @@ export default function RadioApp() {
             ))}
           </g>
 
-          {/* Left Broad Violet Anodized Metal Channel */}
+          {/* Left Slim Violet Anodized Metal Channel Arc */}
           <g id="anodized-band-group">
             {/* Outer Recessed Groove Shadow */}
             <path
               d={`
-                M 245 0
-                A ${rBandOuter + 2} ${rBandOuter + 2} 0 0 0 245 490
-                L 346 490
-                A ${rBandInner - 2} ${rBandInner - 2} 0 0 1 346 0
+                M 255 0
+                A ${rBandOuter + 2} ${rBandOuter + 2} 0 0 0 255 490
+                L 333 490
+                A ${rBandInner - 2} ${rBandInner - 2} 0 0 1 333 0
                 Z
               `}
-              fill="#080410"
-              opacity="0.7"
+              fill="#06030C"
+              opacity="0.8"
             />
 
-            {/* Main Anodized Metal Arc */}
+            {/* Main Slim Anodized Metal Arc */}
             <path
               d={`
-                M 247 0
-                A ${rBandOuter} ${rBandOuter} 0 0 0 247 490
-                L 344 490
-                A ${rBandInner} ${rBandInner} 0 0 1 344 0
+                M 257 0
+                A ${rBandOuter} ${rBandOuter} 0 0 0 257 490
+                L 331 490
+                A ${rBandInner} ${rBandInner} 0 0 1 331 0
                 Z
               `}
               fill="url(#anodizedBandGradient)"
               opacity="0.95"
             />
 
-            {/* Inner Chamfer Highlight Line on Band's Right Lip */}
-            <path
-              d={`
-                M 344 0
-                A ${rBandInner} ${rBandInner} 0 0 1 344 490
-              `}
-              fill="none"
-              stroke="rgba(255, 255, 255, 0.4)"
-              strokeWidth="1.2"
-            />
-
             {/* Outer Deep Cut Shadow Line on Band's Left Lip */}
             <path
               d={`
-                M 247 0
-                A ${rBandOuter} ${rBandOuter} 0 0 0 247 490
+                M 257 0
+                A ${rBandOuter} ${rBandOuter} 0 0 0 257 490
               `}
               fill="none"
-              stroke="#070310"
+              stroke="#06020C"
               strokeWidth="2"
             />
           </g>
@@ -534,7 +514,7 @@ export default function RadioApp() {
               cy={cy + 0.6}
               r={rBandInner - 12}
               fill="none"
-              stroke="rgba(255, 255, 255, 0.35)"
+              stroke="rgba(255, 255, 255, 0.28)"
               strokeWidth="2"
               strokeDasharray="2 6"
             />
@@ -544,7 +524,7 @@ export default function RadioApp() {
               cy={cy}
               r={rBandInner - 12}
               fill="none"
-              stroke="#130D22"
+              stroke="#0C0718"
               strokeWidth="2.2"
               strokeDasharray="2 6"
             />
@@ -561,23 +541,23 @@ export default function RadioApp() {
           >
             {radialTicks.map((t) => (
               <g key={t.id}>
-                {/* 1. Lower Specular Bevel Highlight (Light catching the milled edge) */}
+                {/* 1. Lower Specular Bevel Highlight */}
                 <line
                   x1={t.hx1}
                   y1={t.hy1}
                   x2={t.hx2}
                   y2={t.hy2}
-                  stroke={t.isMajor ? "rgba(255, 255, 255, 0.38)" : "rgba(255, 255, 255, 0.22)"}
-                  strokeWidth={t.isMajor ? "1.6" : "1.0"}
+                  stroke={t.isMajor ? "rgba(255, 255, 255, 0.32)" : "rgba(255, 255, 255, 0.18)"}
+                  strokeWidth={t.isMajor ? "1.5" : "0.9"}
                   strokeLinecap="round"
                 />
-                {/* 2. Top Dark Shadow (Cast by upper metal ridge) */}
+                {/* 2. Top Dark Shadow */}
                 <line
                   x1={t.sx1}
                   y1={t.sy1}
                   x2={t.sx2}
                   y2={t.sy2}
-                  stroke="#07040E"
+                  stroke="#05020A"
                   strokeWidth={t.isMajor ? "1.8" : "1.2"}
                   strokeLinecap="round"
                 />
@@ -587,40 +567,13 @@ export default function RadioApp() {
                   y1={t.y1}
                   x2={t.x2}
                   y2={t.y2}
-                  stroke={t.isMajor ? "#312348" : t.isMedium ? "#261B3B" : "#1D142F"}
-                  strokeWidth={t.isMajor ? "2.2" : t.isMedium ? "1.5" : "1.1"}
+                  stroke={t.isMajor ? "#281A3C" : t.isMedium ? "#1E1330" : "#160D24"}
+                  strokeWidth={t.isMajor ? "2.0" : t.isMedium ? "1.4" : "1.0"}
                   strokeLinecap="round"
                 />
               </g>
             ))}
           </g>
-
-          {/* Recessed Center Dial Face Plate */}
-          <circle
-            cx={cx}
-            cy={cy}
-            r={rInnerTicks - 32}
-            fill="#0B0714"
-            opacity="0.9"
-          />
-
-          {/* Milled Inner Circle Rim with Chrome Specular Highlight */}
-          <circle
-            cx={cx}
-            cy={cy}
-            r={rInnerTicks - 32}
-            fill="none"
-            stroke="rgba(255, 255, 255, 0.22)"
-            strokeWidth="1.2"
-          />
-          <circle
-            cx={cx}
-            cy={cy + 1}
-            r={rInnerTicks - 33}
-            fill="none"
-            stroke="#05030A"
-            strokeWidth="1.5"
-          />
 
           {/* Horizontal Precision Steel Needle / Tuning Line Indicator with dynamic glow */}
           <g id="needle-group">
@@ -628,7 +581,7 @@ export default function RadioApp() {
             <polygon
               points="125,245 135,240 135,250"
               fill="url(#anodizedBandGradient)"
-              stroke="rgba(255, 255, 255, 0.8)"
+              stroke="rgba(255, 255, 255, 0.7)"
               strokeWidth="0.8"
               className="drop-shadow-md"
             />
@@ -644,19 +597,19 @@ export default function RadioApp() {
               x2="284"
               y2="245"
               stroke={signalStrength > 0.6 ? "#F3E8FF" : "#D8B4FE"}
-              strokeWidth="4"
-              opacity="0.4"
+              strokeWidth="3.5"
+              opacity="0.35"
               filter="url(#purpleGlow)"
             />
 
-            {/* Glowing Violet Glass Core Needle */}
+            {/* Glowing Violet Core Needle */}
             <line
               x1="135"
               y1="245"
               x2="284"
               y2="245"
               stroke={signalStrength > 0.6 ? "#FFFFFF" : isDragging ? "#E9D5FF" : "#D2C0FC"}
-              strokeWidth={isDragging ? "2.6" : "2.2"}
+              strokeWidth={isDragging ? "2.4" : "2.0"}
               strokeLinecap="round"
               filter="url(#purpleGlow)"
               className="transition-all duration-150"
@@ -668,8 +621,8 @@ export default function RadioApp() {
               y1="245"
               x2="310"
               y2="245"
-              stroke={signalStrength > 0.6 ? "#C084FC" : "#9067DD"}
-              strokeWidth="1.8"
+              stroke={signalStrength > 0.6 ? "#C084FC" : "#8960D4"}
+              strokeWidth="1.6"
               strokeLinecap="round"
               className="transition-colors duration-150"
             />
@@ -681,7 +634,7 @@ export default function RadioApp() {
           {presets.map((pFreq) => {
             const angle = getAngleForFreq(pFreq);
             const rad = (angle * Math.PI) / 180;
-            const rNum = 378;
+            const rNum = 315; // Placed perfectly centered within the violet metal band
             const x = roundCoord(cx + rNum * Math.cos(rad));
             const y = roundCoord(cy + rNum * Math.sin(rad));
             const isClosest = Math.abs(frequency - pFreq) < (band === 'FM' ? 0.3 : 25);
@@ -707,15 +660,15 @@ export default function RadioApp() {
                 } ${
                   isClosest
                     ? 'text-white scale-115'
-                    : 'text-[#8778A8] hover:text-[#D5C6F7]'
+                    : 'text-[#CDBCEE] hover:text-white'
                 }`}
                 style={{
                   left: `${leftPct}%`,
                   top: `${topPct}%`,
-                  // Authentic physical metal laser-etching deboss effect
+                  // Deep laser-engraved metal deboss with specular lower bevel
                   textShadow: isClosest
-                    ? '0 1px 0 rgba(255, 255, 255, 0.9), 0 -1px 2px rgba(0, 0, 0, 0.9), 0 0 12px rgba(220, 195, 255, 0.95)'
-                    : '0 1px 0 rgba(255, 255, 255, 0.35), 0 -1px 1px rgba(0, 0, 0, 0.95)',
+                    ? '0 1px 0.5px rgba(255, 255, 255, 0.9), 0 -1.5px 2px rgba(0, 0, 0, 0.95), 0 0 12px rgba(230, 210, 255, 0.95)'
+                    : '0 1px 0.5px rgba(255, 255, 255, 0.4), 0 -1.5px 2px rgba(0, 0, 0, 0.95)',
                 }}
                 title={`Tune to ${pFreq} ${band}`}
               >
@@ -738,12 +691,12 @@ export default function RadioApp() {
           <div
             className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full border text-[8px] tracking-wider font-bold transition-all ${
               signalStrength > 0.6
-                ? 'bg-[#1D1336] border-[#A855F7] text-[#FAF5FF] shadow-[0_0_10px_rgba(168,85,247,0.7)]'
-                : 'bg-[#150F26] border-[#4E3D70] text-[#D8C7F8]'
+                ? 'bg-[#180E2E] border-[#A855F7] text-[#FAF5FF] shadow-[0_0_10px_rgba(168,85,247,0.7)]'
+                : 'bg-[#110A20] border-[#3E2D5E] text-[#D8C7F8]'
             }`}
             style={{
-              boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.35), inset 0 -1px 1px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.6)',
-              textShadow: '0 1px 0 rgba(255,255,255,0.4), 0 -1px 1px rgba(0,0,0,0.9)',
+              boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.3), inset 0 -1px 1px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.6)',
+              textShadow: '0 1px 0 rgba(255,255,255,0.4), 0 -1px 1px rgba(0,0,0,0.95)',
             }}
           >
             <span className="text-[6px] opacity-70">◄</span>
@@ -753,8 +706,8 @@ export default function RadioApp() {
         </div>
 
         {/* Top-Right Status Bar: Stamped REC button & Clock/Sync */}
-        <div className="absolute top-7 right-9 flex items-center gap-6 z-20">
-          {/* REC Button with metallic engraved label & glowing jewel LED */}
+        <div className="absolute top-7 right-9 flex items-center gap-4 z-20">
+          {/* REC Button with matte milled pocket, debossed typography & LED indicator */}
           <button
             id="rec-btn"
             type="button"
@@ -762,40 +715,42 @@ export default function RadioApp() {
               e.stopPropagation();
               toggleRecording();
             }}
-            className="flex items-center gap-2 cursor-pointer group transition-opacity hover:opacity-90 active:scale-95 px-2 py-1 rounded-md bg-black/20 border border-white/10"
+            className="flex items-center gap-2 cursor-pointer group transition-all hover:opacity-95 active:scale-95 px-3 py-1.5 rounded-full border border-[#3C2D5A]"
             style={{
-              boxShadow: 'inset 0 1px 1px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.2)',
+              background: 'linear-gradient(180deg, #110A20 0%, #19102E 100%)',
+              boxShadow: 'inset 0 1.5px 3px rgba(0,0,0,0.9), inset 0 -1px 1px rgba(255,255,255,0.18), 0 2px 6px rgba(0,0,0,0.5)',
             }}
           >
             <span
-              className="text-[12px] font-bold tracking-wider text-[#DDD6FE] group-hover:text-white"
+              className="text-[11px] font-extrabold tracking-wider text-[#DDD4F8] group-hover:text-white"
               style={{
-                textShadow: '0 1px 0 rgba(255, 255, 255, 0.4), 0 -1px 1px rgba(0, 0, 0, 0.95)',
+                textShadow: '0 1px 0.5px rgba(255, 255, 255, 0.4), 0 -1.5px 2px rgba(0, 0, 0, 0.95)',
               }}
             >
               REC
             </span>
             <span
-              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 border border-black/50 ${
+              className={`w-2 h-2 rounded-full transition-all duration-300 border border-black/60 ${
                 isRecording
-                  ? 'bg-[#FF2222] shadow-[0_0_14px_#FF2222,inset_0_1px_1px_#FFFFFF] animate-pulse'
-                  : 'bg-[#E53935] shadow-[0_0_8px_#E53935,inset_0_1px_1px_rgba(255,255,255,0.7)]'
+                  ? 'bg-[#FF2222] shadow-[0_0_12px_#FF2222,inset_0_1px_1px_#FFFFFF] animate-pulse'
+                  : 'bg-[#D32F2F] shadow-[0_0_6px_#D32F2F,inset_0_0.8px_0.8px_rgba(255,255,255,0.7)]'
               }`}
             />
           </button>
 
-          {/* Sync / Clock Display with Engraved Metallic Stamp */}
+          {/* Sync / Clock Display with Precision Stamped Metal Housing */}
           <div
-            className="flex items-center gap-2 text-[#ECE8F5] px-2.5 py-1 rounded-md bg-black/20 border border-white/10"
+            className="flex items-center gap-2 text-[#ECE8F5] px-3 py-1.5 rounded-full border border-[#3C2D5A]"
             style={{
-              boxShadow: 'inset 0 1px 1px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.2)',
+              background: 'linear-gradient(180deg, #110A20 0%, #19102E 100%)',
+              boxShadow: 'inset 0 1.5px 3px rgba(0,0,0,0.9), inset 0 -1px 1px rgba(255,255,255,0.18), 0 2px 6px rgba(0,0,0,0.5)',
             }}
           >
             <svg
-              className={`w-3.5 h-3.5 text-[#E0D7F5] ${isPlaying ? 'animate-spin' : ''}`}
+              className={`w-3.5 h-3.5 text-[#D8C9F8] ${isPlaying ? 'animate-spin' : ''}`}
               style={{
                 animationDuration: '6s',
-                filter: 'drop-shadow(0 1px 0 rgba(255,255,255,0.3)) drop-shadow(0 -1px 1px rgba(0,0,0,0.9))',
+                filter: 'drop-shadow(0 1px 0 rgba(255,255,255,0.3)) drop-shadow(0 -1px 1px rgba(0,0,0,0.95))',
               }}
               viewBox="0 0 24 24"
               fill="none"
@@ -807,9 +762,9 @@ export default function RadioApp() {
               <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
             </svg>
             <span
-              className="text-[13px] font-bold tracking-wide text-[#EAE4F7]"
+              className="text-[12px] font-extrabold tracking-wide text-[#EAE2F8]"
               style={{
-                textShadow: '0 1px 0 rgba(255, 255, 255, 0.35), 0 -1px 1px rgba(0, 0, 0, 0.95)',
+                textShadow: '0 1px 0.5px rgba(255, 255, 255, 0.4), 0 -1.5px 2px rgba(0, 0, 0, 0.95)',
               }}
             >
               {isRecording ? formattedRecTime : currentTimeStr}
@@ -826,108 +781,59 @@ export default function RadioApp() {
             transform: 'translate(-50%, -50%)',
           }}
         >
-          {/* Top Frequency & Channel Label - Engraved Stamped Metal */}
-          <div className="flex items-baseline gap-2 mb-3">
-            <span
-              className="text-[20px] sm:text-[22px] font-bold text-[#F3EEFF] tracking-tight"
-              style={{
-                textShadow: '0 1px 0 rgba(255, 255, 255, 0.45), 0 -1px 2px rgba(0, 0, 0, 0.95)',
-              }}
-            >
-              {band === 'FM' ? `${frequency.toFixed(1)} FM` : `${Math.round(frequency)} AM`}
-            </span>
-            <span
-              className="text-[9px] font-extrabold uppercase tracking-[0.25em] text-[#8C7DA8]"
-              style={{
-                textShadow: '0 1px 0 rgba(255, 255, 255, 0.3), 0 -1px 1px rgba(0, 0, 0, 0.95)',
-              }}
-            >
-              CHANNEL
-            </span>
-          </div>
-
-          {/* Main Large Frequency Display Pill (Recessed Milled Bezel with Chrome Chamfer) */}
-          <button
-            id="frequency-display-pill"
-            type="button"
+          {/* Main Large Frequency Readout - Laser-Debossed Directly onto Matte Metal Faceplate */}
+          <div
+            id="frequency-display-engraved"
             onClick={(e) => {
               e.stopPropagation();
               togglePower();
             }}
-            className="group relative flex items-center justify-center px-7 py-3 rounded-full border border-[#524176] transition-all active:scale-[0.98] cursor-pointer"
-            style={{
-              minWidth: '184px',
-              background: 'linear-gradient(180deg, #0A0612 0%, #150E24 50%, #0F091A 100%)',
-              boxShadow: `
-                inset 0 3px 6px rgba(0, 0, 0, 0.9),
-                inset 0 -2px 3px rgba(255, 255, 255, 0.2),
-                0 6px 20px rgba(0, 0, 0, 0.6),
-                0 1px 0 rgba(255, 255, 255, 0.35)
-              `,
-            }}
+            className="my-1 cursor-pointer select-none group transition-transform active:scale-[0.98]"
             title={isPlaying ? 'Click to Pause' : 'Click to Play'}
           >
-            {/* Polished Chamfer Outer Ring */}
             <span
-              className="absolute -inset-[2px] rounded-full pointer-events-none opacity-80"
-              style={{
-                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, transparent 40%, rgba(0, 0, 0, 0.8) 70%, rgba(255, 255, 255, 0.3) 100%)',
-                mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                maskComposite: 'exclude',
-                WebkitMaskComposite: 'xor',
-                padding: '1px',
-              }}
-            />
-
-            {/* Glowing Digits with High-Contrast Debossed Edge */}
-            <span
-              className={`text-[42px] sm:text-[46px] font-extrabold tracking-tight transition-colors duration-200 ${
+              className={`text-[52px] sm:text-[58px] font-black tracking-tight leading-none transition-all duration-200 ${
                 isPlaying
                   ? 'text-white'
-                  : 'text-[#EDE5FF]'
+                  : 'text-[#EFE8FF] group-hover:text-white'
               }`}
               style={{
                 fontFamily: 'ui-sans-serif, system-ui, -apple-system, sans-serif',
                 fontVariantNumeric: 'tabular-nums',
                 textShadow: isPlaying
-                  ? '0 1px 0 rgba(255, 255, 255, 0.7), 0 -1px 2px rgba(0, 0, 0, 0.9), 0 0 16px rgba(230, 210, 255, 0.75)'
-                  : '0 1px 0 rgba(255, 255, 255, 0.4), 0 -1px 2px rgba(0, 0, 0, 0.95)',
+                  ? '0 1.5px 0.5px rgba(255, 255, 255, 0.75), 0 -2.5px 3px rgba(0, 0, 0, 0.95), 0 0 18px rgba(230, 210, 255, 0.75)'
+                  : '0 1.5px 0.5px rgba(255, 255, 255, 0.4), 0 -2.5px 3px rgba(0, 0, 0, 0.95)',
               }}
             >
               {formattedFrequency}
             </span>
+          </div>
 
-            {/* Subtle Pulse ring when playing */}
-            {isPlaying && (
-              <span className="absolute -inset-1 rounded-full border border-[#A855F7]/40 animate-pulse pointer-events-none shadow-[0_0_12px_rgba(168,85,247,0.4)]" />
-            )}
-          </button>
-
-          {/* Active Station Tagline / Genre if tuned */}
+          {/* Active Station Tagline / Genre if tuned - Laser Etched Text */}
           <div className="h-6 mt-2 flex items-center justify-center">
             {activeStation && isPlaying ? (
               <span
-                className="text-[11px] font-bold text-[#DDD6FE] animate-fadeIn truncate max-w-[200px]"
+                className="text-[11px] font-bold text-[#E2D8FF] animate-fadeIn truncate max-w-[200px]"
                 style={{
-                  textShadow: '0 1px 0 rgba(255,255,255,0.4), 0 -1px 1px rgba(0,0,0,0.95)',
+                  textShadow: '0 1px 0.5px rgba(255,255,255,0.4), 0 -1.5px 2px rgba(0,0,0,0.95)',
                 }}
               >
                 {activeStation.name}
               </span>
             ) : isPlaying ? (
               <span
-                className="text-[11px] font-semibold text-[#9687B5] italic"
+                className="text-[11px] font-semibold text-[#A294C2] italic"
                 style={{
-                  textShadow: '0 1px 0 rgba(255,255,255,0.25), 0 -1px 1px rgba(0,0,0,0.95)',
+                  textShadow: '0 1px 0.5px rgba(255,255,255,0.25), 0 -1.5px 1.5px rgba(0,0,0,0.95)',
                 }}
               >
                 Scanning static...
               </span>
             ) : (
               <span
-                className="text-[11px] font-semibold text-[#736391]"
+                className="text-[11px] font-semibold text-[#80709F]"
                 style={{
-                  textShadow: '0 1px 0 rgba(255,255,255,0.2), 0 -1px 1px rgba(0,0,0,0.95)',
+                  textShadow: '0 1px 0.5px rgba(255,255,255,0.2), 0 -1.5px 1.5px rgba(0,0,0,0.95)',
                 }}
               >
                 Standby • Tap to Start
@@ -936,7 +842,7 @@ export default function RadioApp() {
           </div>
 
           {/* FM / AM Mode Selector Switch - Precision Engraved Stamped Metal */}
-          <div className="flex items-center gap-4 mt-2">
+          <div className="flex items-center gap-5 mt-2">
             <button
               id="fm-toggle-btn"
               type="button"
@@ -944,15 +850,15 @@ export default function RadioApp() {
                 e.stopPropagation();
                 toggleBand('FM');
               }}
-              className={`text-[19px] font-extrabold tracking-wider transition-all duration-150 cursor-pointer ${
+              className={`text-[19px] font-black tracking-wider transition-all duration-150 cursor-pointer ${
                 band === 'FM'
-                  ? 'text-[#C4B5FD]'
-                  : 'text-[#645384] hover:text-[#937FB5]'
+                  ? 'text-[#DDD0FA]'
+                  : 'text-[#584872] hover:text-[#8874A8]'
               }`}
               style={{
                 textShadow: band === 'FM'
-                  ? '0 1px 0 rgba(255, 255, 255, 0.8), 0 -1px 2px rgba(0, 0, 0, 0.9), 0 0 10px rgba(196, 181, 253, 0.8)'
-                  : '0 1px 0 rgba(255, 255, 255, 0.3), 0 -1px 1px rgba(0, 0, 0, 0.95)',
+                  ? '0 1px 0.5px rgba(255, 255, 255, 0.7), 0 -1.5px 2px rgba(0, 0, 0, 0.95), 0 0 10px rgba(196, 181, 253, 0.75)'
+                  : '0 1px 0 rgba(255, 255, 255, 0.25), 0 -1.5px 1.5px rgba(0, 0, 0, 0.95)',
               }}
             >
               FM
@@ -964,15 +870,15 @@ export default function RadioApp() {
                 e.stopPropagation();
                 toggleBand('AM');
               }}
-              className={`text-[19px] font-extrabold tracking-wider transition-all duration-150 cursor-pointer ${
+              className={`text-[19px] font-black tracking-wider transition-all duration-150 cursor-pointer ${
                 band === 'AM'
-                  ? 'text-[#C4B5FD]'
-                  : 'text-[#645384] hover:text-[#937FB5]'
+                  ? 'text-[#DDD0FA]'
+                  : 'text-[#584872] hover:text-[#8874A8]'
               }`}
               style={{
                 textShadow: band === 'AM'
-                  ? '0 1px 0 rgba(255, 255, 255, 0.8), 0 -1px 2px rgba(0, 0, 0, 0.9), 0 0 10px rgba(196, 181, 253, 0.8)'
-                  : '0 1px 0 rgba(255, 255, 255, 0.3), 0 -1px 1px rgba(0, 0, 0, 0.95)',
+                  ? '0 1px 0.5px rgba(255, 255, 255, 0.7), 0 -1.5px 2px rgba(0, 0, 0, 0.95), 0 0 10px rgba(196, 181, 253, 0.75)'
+                  : '0 1px 0 rgba(255, 255, 255, 0.25), 0 -1.5px 1.5px rgba(0, 0, 0, 0.95)',
               }}
             >
               AM
